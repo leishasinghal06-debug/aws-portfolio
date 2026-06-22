@@ -1,0 +1,607 @@
+/* ============================================
+   1. RESET & ROOT VARIABLES
+============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* width/height includes padding+border */
+}
+
+:root {
+    /* ---- COLOR PALETTE ----
+       Change any value here and it updates EVERYWHERE that variable is used. */
+    --wine-red: #7B1E2B;       /* primary: headings, buttons, highlights */
+    --beige: #F5F0E6;          /* main page background */
+    --cream: #FAF7F2;          /* card/section backgrounds */
+    --soft-brown: #D8C3A5;     /* accents, borders */
+    --white: #FFFFFF;          /* cards, content areas */
+    --dark-text: #3D2D24;      /* main body text color */
+}
+
+body {
+    font-family: 'Poppins', sans-serif;  /* body text font */
+    background-color: var(--beige);
+    color: var(--dark-text);
+    line-height: 1.7;
+    overflow-x: hidden; /* prevents the floating blobs from causing horizontal scroll */
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif; /* elegant heading font */
+    color: var(--wine-red);
+}
+
+a {
+    text-decoration: none;
+    color: inherit; /* links use the surrounding text color, not default blue */
+}
+
+/* ============================================
+   2. GLASSMORPHISM CARD (reused everywhere)
+============================================ */
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.55); /* white, but 55% see-through */
+    backdrop-filter: blur(12px);           /* blurs whatever is BEHIND the card */
+    border: 1px solid rgba(216, 195, 165, 0.6); /* soft-brown, semi-transparent border */
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(123, 30, 43, 0.08); /* subtle wine-red tinted shadow */
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+/* ============================================
+   3. NAVBAR
+============================================ */
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(245, 240, 230, 0.75); /* beige, semi-transparent */
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(216, 195, 165, 0.5);
+}
+
+.nav-container {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--wine-red);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2.2rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    position: relative;
+    padding-bottom: 4px;
+}
+
+.nav-link::after {
+    /* invisible underline that grows on hover/active, instead of always showing */
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0%;
+    height: 2px;
+    background: var(--wine-red);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%; /* underline expands fully on hover or if it's the active page */
+}
+
+/* Hamburger button: hidden on desktop by default (shown in media query below) */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.hamburger span {
+    width: 26px;
+    height: 3px;
+    background: var(--wine-red);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* When menu is open, animate the 3 lines into an "X" shape */
+.hamburger.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* ============================================
+   4. BUTTONS
+============================================ */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.8rem;
+    border-radius: 50px; /* fully rounded "pill" button */
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--wine-red);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: #5e1620; /* darker wine red on hover */
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(123, 30, 43, 0.35); /* glow effect */
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--wine-red);
+    border: 2px solid var(--wine-red);
+}
+
+.btn-outline:hover {
+    background: var(--wine-red);
+    color: var(--white);
+    transform: translateY(-4px);
+}
+
+.full-width {
+    width: 100%;
+    justify-content: center;
+}
+
+/* ============================================
+   5. HERO SECTION
+============================================ */
+
+.hero {
+    position: relative; /* needed so the floating blobs can be positioned inside it */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 7rem 1.5rem 3rem;
+    overflow: hidden; /* keeps blobs from spilling outside the section */
+}
+
+.hero-container {
+    max-width: 1150px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2; /* keeps text ABOVE the decorative blobs */
+}
+
+.hero-text {
+    flex: 1;
+    min-width: 300px;
+}
+
+.hero-text h1 {
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    font-weight: 800;
+    margin-bottom: 0.6rem;
+}
+
+.subtitle {
+    font-family: 'Poppins', sans-serif; /* override the serif heading font for this one */
+    font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+    color: var(--dark-text);
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.hero-intro {
+    color: var(--dark-text);
+    opacity: 0.85;
+    max-width: 480px;
+    margin-bottom: 2rem;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.hero-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    min-width: 260px;
+}
+
+.image-ring {
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    border: 4px solid var(--wine-red);
+    box-shadow: 0 0 0 10px rgba(216, 195, 165, 0.4); /* soft-brown halo around the ring */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--cream);
+}
+
+.image-ring img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Decorative floating blobs */
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(50px);
+    opacity: 0.5;
+    z-index: 1;
+    animation: float 8s ease-in-out infinite; /* gentle up-and-down floating loop */
+}
+
+.blob-1 {
+    width: 320px;
+    height: 320px;
+    background: var(--wine-red);
+    top: -80px;
+    left: -100px;
+    opacity: 0.18;
+}
+
+.blob-2 {
+    width: 260px;
+    height: 260px;
+    background: var(--soft-brown);
+    bottom: -60px;
+    right: -60px;
+    opacity: 0.35;
+    animation-delay: 2s; /* starts its float cycle slightly offset from blob-1 */
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-25px); }
+}
+
+/* ============================================
+   6. SECTION-WIDE STYLES + SCROLL REVEAL
+============================================ */
+
+.section-container {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 5rem 1.5rem;
+}
+
+.section-title {
+    text-align: center;
+    font-size: clamp(2rem, 4vw, 2.6rem);
+    margin-bottom: 3rem;
+}
+
+/* Elements with class "reveal" start invisible+lower,
+   then JS adds "visible" once they scroll into view */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ============================================
+   7. ABOUT SECTION
+============================================ */
+
+.about-card {
+    padding: 2.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.about-card p {
+    margin-bottom: 1rem;
+}
+
+.skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+.skill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--white);
+    border: 1px solid var(--soft-brown);
+    color: var(--wine-red);
+    padding: 0.5rem 1.1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+
+.skill-badge:hover {
+    transform: scale(1.1); /* badge grows slightly on hover */
+    background: var(--wine-red);
+    color: var(--white);
+}
+
+/* ============================================
+   8. PROJECTS SECTION
+============================================ */
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.project-card {
+    padding: 2.2rem;
+}
+
+.project-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(123, 30, 43, 0.2);
+    border-color: var(--wine-red);
+}
+
+.project-icon {
+    font-size: 2.2rem;
+    color: var(--wine-red);
+    margin-bottom: 1rem;
+}
+
+.project-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.4;
+}
+
+.project-card p {
+    color: var(--dark-text);
+    opacity: 0.85;
+    font-size: 0.95rem;
+    margin-bottom: 1.3rem;
+}
+
+.tech-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tech-badges span {
+    background: rgba(123, 30, 43, 0.08);
+    color: var(--wine-red);
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+/* ============================================
+   9. CONTACT SECTION
+============================================ */
+
+.contact-wrapper {
+    display: flex;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.contact-info {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.5rem;
+}
+
+.contact-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--wine-red);
+}
+
+.contact-item i {
+    font-size: 1.6rem;
+    color: var(--wine-red);
+}
+
+.contact-item h4 {
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+}
+
+.contact-item p {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.contact-form {
+    flex: 1.3;
+    min-width: 280px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.contact-form label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 0.6rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--soft-brown);
+    background: rgba(255, 255, 255, 0.7);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    color: var(--dark-text);
+    resize: vertical; /* lets user resize the textarea up/down only */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none; /* removes default browser blue outline */
+    border-color: var(--wine-red);
+    box-shadow: 0 0 0 3px rgba(123, 30, 43, 0.12); /* soft glow ring instead */
+}
+
+.contact-form button {
+    margin-top: 1rem;
+}
+
+/* ============================================
+   10. FOOTER
+============================================ */
+
+.footer {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    background: var(--wine-red);
+    color: var(--white);
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   11. RESPONSIVE DESIGN — TABLET & MOBILE
+============================================ */
+
+@media (max-width: 900px) {
+    .hero-container {
+        flex-direction: column-reverse; /* image appears above text on smaller screens */
+        text-align: center;
+    }
+
+    .hero-text {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-intro {
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Show the hamburger button, hide the normal nav links by default */
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 64px;
+        right: 0;
+        height: calc(100vh - 64px);
+        width: 220px;
+        background: var(--cream);
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 2rem;
+        gap: 1.5rem;
+        transform: translateX(100%); /* hidden off-screen to the right by default */
+        transition: transform 0.4s ease; /* smooth slide-in animation */
+        box-shadow: -5px 0 20px rgba(0,0,0,0.08);
+    }
+
+    .nav-links.open {
+        transform: translateX(0); /* slides into view when "open" class is added by JS */
+    }
+
+    .contact-wrapper {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 500px) {
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .section-container {
+        padding: 3.5rem 1.2rem;
+    }
+}
+
+/* ============================================
+   ===================== CUSTOMIZATION GUIDE =====================
+   1. Change your name in index.html (search: "Lekisha")
+   2. Change subtitle in index.html (search: "B.Tech Information
+      Technology Student | Cloud & Web Development Enthusiast")
+   3. Change email, GitHub link, LinkedIn link in index.html
+      (search: "youremail@example.com", "yourusername")
+   4. Replace profile image in the assets/ folder
+      (search: "profile.jpg")
+   5. Colors can be changed in :root (CSS variables at the top
+      of this file) — just edit the 6 hex codes and the whole
+      site updates automatically.
+   ================================================================
+============================================ */
